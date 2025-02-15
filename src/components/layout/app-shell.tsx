@@ -2,8 +2,14 @@
 
 import { LeftPanel } from '@/components/layout/left-panel'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { Menu, Plus, User } from 'lucide-react'
+import { LogOut, Menu, Plus, User } from 'lucide-react'
 import { useState } from 'react'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -54,9 +60,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Right Button Items */}
         <div className="flex items-center px-2">
           {/* Account Menu */}
-          <Button variant="ghost" size="icon" aria-label="Account menu">
-            <User className="h-5 w-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Account menu"
+                className="pointer-events-auto"
+              >
+                <User className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
