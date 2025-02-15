@@ -21,7 +21,8 @@
 ## Technical Requirements
 
 - **Architecture**: Built with Next.js 15 and React 19, utilizing a serverless backend with Prisma and MongoDB.
-- **UI**: Shadcn/UI, TailwindCSS, Lucide Icons
+- **Frontend - Layout**: Shadcn/UI, TailwindCSS, Lucide Icons.
+- **Frontend - Editor**: use tiptap for the editor. support markdown, todo list, code block, etc.
 - **APIs**: LangGraph API for AI-based summarization and categorization.
 - **Data Models**: T.B.D.
 - **Security**: use magic link for authentication with Auth.js
