@@ -21,6 +21,7 @@
 ## Technical Requirements
 
 - **Architecture**: Built with Next.js 15 and React 19, utilizing a serverless backend with Prisma and MongoDB.
+- **UI**: Shadcn/UI, TailwindCSS, Lucide Icons
 - **APIs**: LangGraph API for AI-based summarization and categorization.
 - **Data Models**: T.B.D.
 - **Security**: use magic link for authentication with Auth.js
