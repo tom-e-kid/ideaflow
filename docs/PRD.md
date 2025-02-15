@@ -9,7 +9,7 @@
 ## User Requirements
 
 - **User Personas**: Entrepreneurs, product managers, and creatives who need a structured yet flexible way to document and expand ideas.
-- **User Stories**: 
+- **User Stories**:
   - As a user, I want to quickly jot down ideas without selecting categories.
   - As a user, I want AI to suggest related ideas from past notes.
   - As a user, I want to view my notes by date, keywords, and AI-generated themes.
@@ -45,4 +45,3 @@
 
 - **KPIs**: User engagement rate, AI suggestion accuracy, and note retrieval efficiency.
 - **Measurement Plan**: Track AI performance, user retention, and feedback-driven improvements.
-
