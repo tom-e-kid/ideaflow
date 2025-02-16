@@ -10,15 +10,26 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { LogOut, Menu, Plus, User } from 'lucide-react'
+import { signOut, useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const { status } = useSession()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const pathname = usePathname()
 
   // Check if current route is an auth route
   const isAuthRoute = pathname.startsWith('/auth')
+
+  // Handle loading state
+  if (status === 'loading') {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent" />
+      </div>
+    )
+  }
 
   // If we're on an auth route, render without the app shell
   if (isAuthRoute) {
@@ -82,7 +93,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/auth/signin' })}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign out
               </DropdownMenuItem>
