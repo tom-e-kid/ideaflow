@@ -10,10 +10,20 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { LogOut, Menu, Plus, User } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const pathname = usePathname()
+
+  // Check if current route is an auth route
+  const isAuthRoute = pathname.startsWith('/auth')
+
+  // If we're on an auth route, render without the app shell
+  if (isAuthRoute) {
+    return <>{children}</>
+  }
 
   return (
     <div className="h-screen flex">

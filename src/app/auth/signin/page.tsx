@@ -27,31 +27,29 @@ export default function SignIn() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <Card className="w-[400px]">
-        <CardHeader>
-          <h1 className="text-2xl font-bold text-center">Sign In</h1>
-          <p className="text-muted-foreground text-center">
-            Enter your email to sign in with a magic link
-          </p>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent>
-            <Input
-              type="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Sending...' : 'Send Magic Link'}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+    <Card className="w-[min(400px,90%)] mx-auto shadow-lg">
+      <CardHeader>
+        <h1 className="text-2xl font-bold text-center">Sign In</h1>
+        <p className="text-muted-foreground text-center">
+          Enter your email to sign in with a magic link
+        </p>
+      </CardHeader>
+      <form onSubmit={handleSubmit}>
+        <CardContent>
+          <Input
+            type="email"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Sending...' : 'Send Magic Link'}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   )
 }
