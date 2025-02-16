@@ -15,7 +15,7 @@ export default function SignIn() {
     setIsLoading(true)
 
     try {
-      await signIn('email', {
+      await signIn('resend', {
         email,
         callbackUrl: '/',
       })
