@@ -1,7 +1,17 @@
 import { AppShell } from '@/components/layout/app-shell'
+import { auth } from '@/lib/auth'
 import type { Metadata } from 'next'
 import { SessionProvider } from 'next-auth/react'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import './globals.css'
+
+const PUBLIC_PATHS = [
+  '/auth/signin',
+  '/auth/signup',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+]
 
 export const metadata: Metadata = {
   title: 'Ideaflow',
@@ -10,6 +20,17 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const h = await headers()
+  const pathname = h.get('x-pathname')
+  const isPublicPath = PUBLIC_PATHS.some((p) => pathname?.startsWith(p))
+  const session = await auth()
+
+  if (!session && !isPublicPath) {
+    redirect('/auth/signin')
+  }
+  if (session && isPublicPath) {
+    redirect('/')
+  }
   return (
     <html lang="en">
       <body>
