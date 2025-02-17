@@ -25,7 +25,7 @@
 - **Frontend - Editor**: use tiptap for the editor. support markdown, todo list, code block, etc.
 - **APIs**: LangGraph API for AI-based summarization and categorization.
 - **Data Models**: T.B.D.
-- **Security**: use magic link for authentication with Auth.js
+- **Security**: use magic link for authentication with Auth.js, next-auth, prisma, mongodb.
 - **Package Manager**: use pnpm
 
 ## Design Requirements
