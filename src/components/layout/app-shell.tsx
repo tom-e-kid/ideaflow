@@ -105,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <LeftPanel isOpen={isSidebarOpen} />
 
       {/* Main Content */}
-      <main className="flex-1 h-full overflow-auto">{children}</main>
+      <main className="flex-1 h-full overflow-auto pt-14">{children}</main>
     </div>
   )
 }
