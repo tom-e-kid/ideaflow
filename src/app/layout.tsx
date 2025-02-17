@@ -6,12 +6,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import './globals.css'
 
-const PUBLIC_PATHS = [
-  '/auth/signin',
-  '/auth/signup',
-  '/auth/forgot-password',
-  '/auth/reset-password',
-]
+const PUBLIC_PATHS = ['/auth/signin', '/auth/verify']
 
 export const metadata: Metadata = {
   title: 'Ideaflow',
@@ -24,7 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const pathname = h.get('x-pathname')
   const isPublicPath = PUBLIC_PATHS.some((p) => pathname?.startsWith(p))
   const session = await auth()
-
+  console.log('session', session, isPublicPath)
   if (!session && !isPublicPath) {
     redirect('/auth/signin')
   }
