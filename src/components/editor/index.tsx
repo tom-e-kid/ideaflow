@@ -105,9 +105,9 @@ export default function RichEditor({
   })
 
   return (
-    <div className={cn('flex flex-col rounded-md border', className)}>
+    <div className={cn('flex flex-col h-full', className)}>
       <Toolbar editor={editor} />
-      <div className="p-4">
+      <div className="flex-1 overflow-y-auto">
         <Editor
           editor={editor}
           content={content}

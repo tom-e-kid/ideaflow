@@ -31,11 +31,12 @@ export function Toolbar({ editor }: ToolbarProps) {
   }
 
   return (
-    <div className="border border-input bg-transparent rounded-t-md">
-      <div className="flex flex-wrap items-center gap-1 p-1">
+    <div className="border-b border-input bg-background">
+      <div className="flex flex-wrap items-center gap-0.5 px-1.5 py-1">
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
+          className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
         >
@@ -43,7 +44,8 @@ export function Toolbar({ editor }: ToolbarProps) {
         </Button>
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
+          className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().redo()}
         >
@@ -72,34 +74,42 @@ export function Toolbar({ editor }: ToolbarProps) {
           <Heading3 className="h-4 w-4" />
         </Toggle>
         <Separator orientation="vertical" className="mx-1 h-6" />
-        <Toggle
+        <Button
+          variant="ghost"
           size="sm"
-          pressed={editor.isActive('bold')}
-          onPressedChange={() => editor.chain().focus().toggleBold().run()}
+          className="h-7 w-7 p-0"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          disabled={!editor.can().chain().focus().toggleBold().run()}
         >
           <Bold className="h-4 w-4" />
-        </Toggle>
-        <Toggle
+        </Button>
+        <Button
+          variant="ghost"
           size="sm"
-          pressed={editor.isActive('italic')}
-          onPressedChange={() => editor.chain().focus().toggleItalic().run()}
+          className="h-7 w-7 p-0"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          disabled={!editor.can().chain().focus().toggleItalic().run()}
         >
           <Italic className="h-4 w-4" />
-        </Toggle>
-        <Toggle
+        </Button>
+        <Button
+          variant="ghost"
           size="sm"
-          pressed={editor.isActive('strike')}
-          onPressedChange={() => editor.chain().focus().toggleStrike().run()}
+          className="h-7 w-7 p-0"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          disabled={!editor.can().chain().focus().toggleStrike().run()}
         >
           <Strikethrough className="h-4 w-4" />
-        </Toggle>
-        <Toggle
+        </Button>
+        <Button
+          variant="ghost"
           size="sm"
-          pressed={editor.isActive('code')}
-          onPressedChange={() => editor.chain().focus().toggleCode().run()}
+          className="h-7 w-7 p-0"
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          disabled={!editor.can().chain().focus().toggleCode().run()}
         >
           <Code className="h-4 w-4" />
-        </Toggle>
+        </Button>
         <Separator orientation="vertical" className="mx-1 h-6" />
         <Toggle
           size="sm"

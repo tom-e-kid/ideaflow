@@ -8,11 +8,11 @@ export default function Home() {
     // const markdown = getMarkdownFromHtml(content)
   }
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="h-full w-full">
       <RichEditor
         placeholder="Write your idea here..."
         onChange={handleChange}
-        className="min-h-[200px]"
+        className="h-full"
       />
     </div>
   )

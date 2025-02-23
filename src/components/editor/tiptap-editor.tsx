@@ -119,7 +119,17 @@ export default function Editor({
 
   const editor = externalEditor || internalEditor
 
-  return <EditorContent editor={editor} />
+  return (
+    <EditorContent
+      editor={editor}
+      className={cn(
+        'h-full w-full cursor-text',
+        '[&_.ProseMirror]:h-full',
+        '[&_.ProseMirror]:outline-none',
+        '[&_.ProseMirror]:px-6 [&_.ProseMirror]:py-4'
+      )}
+    />
+  )
 }
 
 export type Editor = EditorType

@@ -27,8 +27,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     redirect('/')
   }
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="h-full">
+      <body className="h-full overflow-hidden">
         <SessionProvider>
           <AppShell>{children}</AppShell>
         </SessionProvider>

@@ -37,45 +37,47 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen flex">
+    <div className="relative h-screen">
       {/* Header Bar */}
       <div className="fixed top-0 left-0 right-0 h-14 z-10 flex items-center justify-between pointer-events-none">
         {/* Left Button Items */}
-        <div
-          className={cn(
-            'flex items-center gap-2 px-2 transition-all duration-300',
-            isSidebarOpen ? 'w-64 justify-between' : 'w-auto'
-          )}
-        >
-          {/* Toggle Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            aria-label="Toggle sidebar"
-            className="pointer-events-auto"
-          >
-            <Menu
-              className={cn(
-                'h-5 w-5 transition-transform duration-300',
-                isSidebarOpen && 'rotate-90'
-              )}
-            />
-          </Button>
+        <div className="flex items-center pointer-events-auto">
+          {/* Toggle Button Container */}
+          <div className="px-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle sidebar"
+            >
+              <Menu
+                className={cn(
+                  'h-5 w-5 transition-transform duration-300 ease-in-out',
+                  isSidebarOpen && 'rotate-90'
+                )}
+              />
+            </Button>
+          </div>
 
-          {/* New Note Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="New note"
-            className="pointer-events-auto"
-            onClick={() => {
-              // TODO: Implement new note creation
-              console.log('Create new note')
-            }}
+          {/* New Note Button Container */}
+          <div
+            className={cn(
+              'transition-[margin] duration-300 ease-in-out',
+              isSidebarOpen ? 'ml-[160px]' : 'ml-1'
+            )}
           >
-            <Plus className="h-5 w-5" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="New note"
+              onClick={() => {
+                // TODO: Implement new note creation
+                console.log('Create new note')
+              }}
+            >
+              <Plus className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Right Button Items */}
@@ -105,7 +107,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <LeftPanel isOpen={isSidebarOpen} />
 
       {/* Main Content */}
-      <main className="flex-1 h-full overflow-auto pt-14">{children}</main>
+      <div
+        className={cn(
+          'absolute top-0 right-0 left-0 h-screen pt-14 transition-transform duration-300',
+          isSidebarOpen ? 'translate-x-64' : 'translate-x-0'
+        )}
+      >
+        <div className="h-full overflow-hidden">{children}</div>
+      </div>
     </div>
   )
 }
