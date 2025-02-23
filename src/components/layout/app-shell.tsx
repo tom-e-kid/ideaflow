@@ -109,8 +109,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <div
         className={cn(
-          'absolute top-0 right-0 left-0 h-screen pt-14 transition-transform duration-300',
-          isSidebarOpen ? 'translate-x-64' : 'translate-x-0'
+          'absolute top-0 right-0 h-screen pt-14 transition-[left] duration-300 ease-in-out',
+          isSidebarOpen ? 'left-64' : 'left-0'
         )}
       >
         <div className="h-full overflow-hidden">{children}</div>
