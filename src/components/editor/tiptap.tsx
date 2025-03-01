@@ -18,6 +18,7 @@ import {
   Strikethrough,
   Undo,
 } from 'lucide-react'
+import { useEffect } from 'react'
 import './tiptap.css'
 
 /**
@@ -142,20 +143,36 @@ function Toolbar({ editor }: ToolbarProps) {
 /**
  * @description Props for the Tiptap component
  * @param className - The class name for the component
+ * @param handleChange - Callback for when the editor content changes
+ * @param initialContent - Initial content for the editor
  */
 type TiptapProps = {
   className?: string
   handleChange?: (content: JSONContent) => void
+  initialContent?: JSONContent | null
 }
 
-export default function Tiptap({ className, handleChange }: TiptapProps) {
+export default function Tiptap({ className, handleChange, initialContent }: TiptapProps) {
   const editor = useEditor({
     extensions: [StarterKit.configure({})],
+    content: initialContent || undefined,
     onUpdate: ({ editor }) => {
       const json = editor.getJSON()
       handleChange?.(json)
     },
+    immediatelyRender: false,
   })
+
+  // Update content when initialContent changes
+  useEffect(() => {
+    if (editor && initialContent) {
+      // Only set content if it's different from current content
+      const currentContent = editor.getJSON()
+      if (JSON.stringify(currentContent) !== JSON.stringify(initialContent)) {
+        editor.commands.setContent(initialContent)
+      }
+    }
+  }, [editor, initialContent])
 
   return (
     <div className={cn(className)}>

@@ -19,6 +19,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.6",
     "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-toast": "^1.2.6",
     "@radix-ui/react-toggle": "^1.1.2",
     "@tailwindcss/typography": "^0.5.16",
     "@tiptap/extension-code": "^2.11.5",

@@ -1,4 +1,5 @@
 import { AppShell } from '@/components/layout/app-shell'
+import { Toaster } from '@/components/ui/toaster'
 import { auth } from '@/lib/auth'
 import type { Metadata } from 'next'
 import { SessionProvider } from 'next-auth/react'
@@ -19,7 +20,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const pathname = h.get('x-pathname')
   const isPublicPath = PUBLIC_PATHS.some((p) => pathname?.startsWith(p))
   const session = await auth()
-  console.log('session', session, isPublicPath)
   if (!session && !isPublicPath) {
     redirect('/auth/signin')
   }
@@ -31,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="h-full overflow-hidden">
         <SessionProvider>
           <AppShell>{children}</AppShell>
+          <Toaster />
         </SessionProvider>
       </body>
     </html>

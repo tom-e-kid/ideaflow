@@ -5,28 +5,56 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { JSONContent } from '@tiptap/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 
-export default function Home() {
+export default function DocPage({ params }: { params: Promise<{ docId: string }> }) {
+  const { docId } = use(params)
+
   const router = useRouter()
   const { toast } = useToast()
-  const [content, setContent] = useState<JSONContent>({
-    type: 'doc',
-    content: [{ type: 'paragraph' }],
-  })
-  const [originalContent, setOriginalContent] = useState<JSONContent>({
-    type: 'doc',
-    content: [{ type: 'paragraph' }],
-  })
+  const [content, setContent] = useState<JSONContent | null>(null)
+  const [originalContent, setOriginalContent] = useState<JSONContent | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
 
-  // Set initial content when component mounts
+  // Fetch document content on load
   useEffect(() => {
-    const initialContent = { type: 'doc', content: [{ type: 'paragraph' }] }
-    setContent(initialContent)
-    setOriginalContent(initialContent)
-  }, [])
+    const fetchDoc = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch(`/api/docs/${docId}`)
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            toast({
+              title: 'Document not found',
+              description: 'The requested document could not be found.',
+              variant: 'destructive',
+            })
+            router.push('/')
+            return
+          }
+          throw new Error('Failed to fetch document')
+        }
+
+        const data = await response.json()
+        setContent(data.content)
+        setOriginalContent(data.content)
+      } catch (error) {
+        console.error('Error fetching document:', error)
+        toast({
+          title: 'Error',
+          description: 'Failed to load document. Please try again.',
+          variant: 'destructive',
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchDoc()
+  }, [docId, router, toast])
 
   // Handle editor content changes
   const handleChange = (newContent: JSONContent) => {
@@ -42,11 +70,12 @@ export default function Home() {
     try {
       setIsSaving(true)
       const response = await fetch('/api/docs', {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          docId,
           content,
         }),
       })
@@ -55,24 +84,32 @@ export default function Home() {
         throw new Error('Failed to save document')
       }
 
-      const data = await response.json()
-
-      // Redirect to the document page
-      router.push(`/docs/${data.docId}`)
+      // Update original content to match current content
+      setOriginalContent(content)
+      setHasChanges(false)
 
       toast({
         title: 'Success',
-        description: 'Document created successfully.',
+        description: 'Document saved successfully.',
       })
     } catch (error) {
       console.error('Error saving document:', error)
       toast({
         title: 'Error',
-        description: 'Failed to create document. Please try again.',
+        description: 'Failed to save document. Please try again.',
         variant: 'destructive',
       })
+    } finally {
       setIsSaving(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <p>Loading document...</p>
+      </div>
+    )
   }
 
   return (
