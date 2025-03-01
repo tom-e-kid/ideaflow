@@ -1,18 +1,16 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
-import type { Editor } from '@tiptap/react'
+import { cn } from '@/lib/utils'
+import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 import {
   Bold,
   Code,
   Heading1,
   Heading2,
   Heading3,
-  Image,
   Italic,
-  Link,
   List,
   ListOrdered,
   Quote,
@@ -20,16 +18,20 @@ import {
   Strikethrough,
   Undo,
 } from 'lucide-react'
+import './tiptap.css'
 
-interface ToolbarProps {
+/**
+ * @description Toolbar component for the editor
+ * @param editor - The editor instance
+ */
+type ToolbarProps = {
   editor: Editor | null
 }
 
-export function Toolbar({ editor }: ToolbarProps) {
+function Toolbar({ editor }: ToolbarProps) {
   if (!editor) {
     return null
   }
-
   return (
     <div className="border-b border-input bg-background">
       <div className="flex flex-wrap items-center gap-0.5 px-1.5 py-1">
@@ -132,31 +134,33 @@ export function Toolbar({ editor }: ToolbarProps) {
         >
           <Quote className="h-4 w-4" />
         </Toggle>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            const url = window.prompt('Enter image URL')
-            if (url) {
-              editor.chain().focus().setImage({ src: url }).run()
-            }
-          }}
-        >
-          <Image className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            const url = window.prompt('Enter link URL')
-            if (url) {
-              editor.chain().focus().setLink({ href: url, target: '_blank' }).run()
-            }
-          }}
-        >
-          <Link className="h-4 w-4" />
-        </Button>
       </div>
+    </div>
+  )
+}
+
+/**
+ * @description Props for the Tiptap component
+ * @param className - The class name for the component
+ */
+type TiptapProps = {
+  className?: string
+  handleChange?: (content: JSONContent) => void
+}
+
+export default function Tiptap({ className, handleChange }: TiptapProps) {
+  const editor = useEditor({
+    extensions: [StarterKit.configure({})],
+    onUpdate: ({ editor }) => {
+      const json = editor.getJSON()
+      handleChange?.(json)
+    },
+  })
+
+  return (
+    <div className={cn(className)}>
+      <Toolbar editor={editor} />
+      <EditorContent editor={editor} className={cn('h-full w-full cursor-text')} />
     </div>
   )
 }

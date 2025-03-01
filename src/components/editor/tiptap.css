@@ -1,0 +1,180 @@
+/**
+ * Tiptapエディタのベーススタイル
+ * エディタ全体のレイアウトとスペーシングを定義
+ */
+.ProseMirror {
+  /* レイアウト */
+  height: 100%;
+  padding: 0.75rem 1rem; /* パディングを少し縮小 */
+
+  /* 外観 */
+  outline: none;
+
+  /* フォント */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.4; /* 基本の行間を設定 */
+}
+
+/**
+ * 見出し要素のスタイル
+ * タイポグラフィの階層構造を定義
+ */
+.ProseMirror h1 {
+  /* レイアウト */
+  margin: 1.5rem 0 0.75rem; /* マージンを縮小 */
+  line-height: 1.2;
+  break-after: avoid;
+
+  /* タイポグラフィ */
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+
+  /* 外観 */
+  color: #1a1a1a;
+}
+
+/* オプション: h1の下に区切り線を入れる場合 */
+.ProseMirror h1:after {
+  content: '';
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem; /* マージンを縮小 */
+  border-bottom: 1px solid #eaeaea; /* ボーダーを細く */
+}
+
+.ProseMirror h2 {
+  /* レイアウト */
+  margin: 1.25rem 0 0.5rem; /* マージンを調整 */
+
+  /* タイポグラフィ */
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ProseMirror h3 {
+  /* レイアウト */
+  margin: 1rem 0 0.4rem; /* マージンを調整 */
+
+  /* タイポグラフィ */
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/**
+ * 引用ブロックのスタイル
+ * 視覚的な区別とインデントを設定
+ */
+.ProseMirror blockquote {
+  /* レイアウト */
+  padding-left: 0.75rem; /* パディングを縮小 */
+  margin: 0.75rem 0; /* マージンを縮小 */
+
+  /* 外観 */
+  border-left: 3px solid #ddd; /* ボーダーを少し細く */
+  font-style: italic;
+}
+
+/**
+ * リスト要素のスタイル
+ * 適切なインデントとスペーシングを設定
+ */
+.ProseMirror ul,
+.ProseMirror ol {
+  /* レイアウト */
+  padding-left: 1.25rem;
+  margin: 0.35rem 0;
+}
+
+/* 順序なしリスト（箇条書き）のスタイル */
+.ProseMirror ul {
+  list-style-type: disc; /* 黒丸 */
+}
+
+.ProseMirror ul ul {
+  list-style-type: circle; /* 白丸（ネストされた1段階目） */
+}
+
+.ProseMirror ul ul ul {
+  list-style-type: square; /* 四角（ネストされた2段階目） */
+}
+
+/* 順序付きリスト（番号付き）のスタイル */
+.ProseMirror ol {
+  list-style-type: decimal; /* 1, 2, 3... */
+}
+
+.ProseMirror ol ol {
+  list-style-type: lower-alpha; /* a, b, c... （ネストされた1段階目） */
+}
+
+.ProseMirror ol ol ol {
+  list-style-type: lower-roman; /* i, ii, iii... （ネストされた2段階目） */
+}
+
+/* リストアイテムの間隔調整 */
+.ProseMirror li {
+  margin: 0.15rem 0;
+  line-height: 1.4;
+}
+
+/* ネストされたリストの調整 */
+.ProseMirror li > ul,
+.ProseMirror li > ol {
+  margin: 0.15rem 0;
+  padding-left: 1rem;
+}
+
+/**
+ * 段落のスタイル
+ */
+.ProseMirror p {
+  margin: 0.5rem 0; /* 段落間の間隔を追加 */
+}
+
+/**
+ * コードブロックのスタイル
+ * 可読性とコンパクトさを両立
+ */
+.ProseMirror pre {
+  /* レイアウト */
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+
+  /* 外観 */
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
+  /* フォント */
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* インラインコードのスタイル */
+.ProseMirror code {
+  /* レイアウト */
+  padding: 0.1rem 0.3rem;
+
+  /* 外観 */
+  background-color: #f5f5f5;
+  border-radius: 3px;
+
+  /* フォント */
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* コードブロック内のコード要素の調整 */
+.ProseMirror pre code {
+  /* インラインコードのスタイルをリセット */
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+
+  /* フォントサイズの継承 */
+  font-size: inherit;
+}
