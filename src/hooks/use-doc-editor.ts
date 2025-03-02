@@ -1,6 +1,6 @@
 'use client'
 
-import { useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/hooks/use-toast'
 import { useDocStore } from '@/stores/doc-store'
 import { JSONContent } from '@tiptap/react'
 import { useCallback, useMemo, useState } from 'react'

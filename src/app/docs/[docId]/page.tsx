@@ -1,8 +1,8 @@
 'use client'
 
 import { Editor } from '@/components/doc/editor'
-import { useToast } from '@/components/ui/use-toast'
 import { useDocEditor } from '@/hooks/use-doc-editor'
+import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import { use, useEffect } from 'react'
 
