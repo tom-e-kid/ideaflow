@@ -61,14 +61,6 @@ export default function DocPage({ params }: { params: Promise<{ docId: string }>
     fetchDoc()
   }, [docId, router, toast, setDocContent, setIsLoading])
 
-  if (isLoading) {
-    return (
-      <div className="h-full w-full flex items-center justify-center">
-        <p>Loading document...</p>
-      </div>
-    )
-  }
-
   return (
     <Editor
       content={content}
@@ -76,6 +68,7 @@ export default function DocPage({ params }: { params: Promise<{ docId: string }>
       handleSave={handleSave}
       isSaving={isSaving}
       hasChanges={hasChanges}
+      isLoading={isLoading}
     />
   )
 }

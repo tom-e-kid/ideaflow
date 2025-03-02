@@ -3,6 +3,7 @@
 import Tiptap from '@/components/editor/tiptap'
 import { Button } from '@/components/ui/button'
 import { JSONContent } from '@tiptap/react'
+import { Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 type EditorProps = {
@@ -11,6 +12,7 @@ type EditorProps = {
   handleSave: () => void
   isSaving: boolean
   hasChanges: boolean
+  isLoading?: boolean
   className?: string
 }
 
@@ -20,6 +22,7 @@ export function Editor({
   handleSave,
   isSaving,
   hasChanges,
+  isLoading = false,
   className = 'h-full w-full',
 }: EditorProps) {
   // for auto focusing
@@ -33,13 +36,13 @@ export function Editor({
 
   // focus editor when isEditorFocused is true
   useEffect(() => {
-    if (editorRef.current && isEditorFocused) {
+    if (editorRef.current && isEditorFocused && !isLoading) {
       setTimeout(() => {
         editorRef.current?.focus()
         setEditorFocused(false)
       }, 100)
     }
-  }, [isEditorFocused, setEditorFocused])
+  }, [isEditorFocused, setEditorFocused, isLoading])
 
   // Add keyboard shortcut for saving
   useEffect(() => {
@@ -48,7 +51,7 @@ export function Editor({
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
         e.preventDefault() // Prevent browser's save dialog
         // Only save if there are changes and not currently saving
-        if (hasChanges && !isSaving) {
+        if (hasChanges && !isSaving && !isLoading) {
           handleSave()
         }
       }
@@ -59,19 +62,19 @@ export function Editor({
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [handleSave, hasChanges, isSaving])
+  }, [handleSave, hasChanges, isSaving, isLoading])
 
   return (
     <div className={className}>
       {/* Save Button */}
       <div className="h-[44px] flex items-center justify-end p-2">
         <Button
-          variant={hasChanges && !isSaving ? 'default' : 'outline'}
+          variant={hasChanges && !isSaving && !isLoading ? 'default' : 'outline'}
           size="sm"
           onClick={handleSave}
-          disabled={!hasChanges || isSaving}
+          disabled={!hasChanges || isSaving || isLoading}
           className={`transition-all duration-200 ${
-            !hasChanges || isSaving
+            !hasChanges || isSaving || isLoading
               ? 'opacity-50 cursor-not-allowed'
               : 'hover:bg-primary hover:text-primary-foreground'
           }`}
@@ -80,12 +83,25 @@ export function Editor({
         </Button>
       </div>
 
-      <Tiptap
-        className="h-[calc(100%-44px)] w-full"
-        handleChange={handleChange}
-        initialContent={content}
-        editorRef={editorRef}
-      />
+      <div className="relative h-[calc(100%-44px)] w-full">
+        <Tiptap
+          className="h-full w-full"
+          handleChange={handleChange}
+          initialContent={content}
+          editorRef={editorRef}
+          disabled={isLoading}
+        />
+
+        {/* Loading Indicator - Centered in the content area */}
+        {isLoading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
+            <div className="bg-background/70 backdrop-blur-sm p-4 rounded-lg shadow-md pointer-events-auto flex flex-col items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+              <p className="text-sm text-muted-foreground">Loading document...</p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

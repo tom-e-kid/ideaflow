@@ -24,24 +24,26 @@ import './tiptap.css'
 /**
  * @description Toolbar component for the editor
  * @param editor - The editor instance
+ * @param disabled - Whether the toolbar is disabled
  */
 type ToolbarProps = {
   editor: Editor | null
+  disabled?: boolean
 }
 
-function Toolbar({ editor }: ToolbarProps) {
+function Toolbar({ editor, disabled = false }: ToolbarProps) {
   if (!editor) {
     return null
   }
   return (
-    <div className="border-b border-input bg-background">
+    <div className={cn('border-b border-input bg-background', disabled && 'opacity-70')}>
       <div className="flex flex-wrap items-center gap-0.5 px-1.5 py-1">
         <Button
           variant="ghost"
           size="sm"
           className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
+          disabled={disabled || !editor.can().undo()}
         >
           <Undo className="h-4 w-4" />
         </Button>
@@ -50,7 +52,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
+          disabled={disabled || !editor.can().redo()}
         >
           <Redo className="h-4 w-4" />
         </Button>
@@ -59,6 +61,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           pressed={editor.isActive('heading', { level: 1 })}
           onPressedChange={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          disabled={disabled}
         >
           <Heading1 className="h-4 w-4" />
         </Toggle>
@@ -66,6 +69,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           pressed={editor.isActive('heading', { level: 2 })}
           onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          disabled={disabled}
         >
           <Heading2 className="h-4 w-4" />
         </Toggle>
@@ -73,6 +77,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           pressed={editor.isActive('heading', { level: 3 })}
           onPressedChange={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          disabled={disabled}
         >
           <Heading3 className="h-4 w-4" />
         </Toggle>
@@ -82,7 +87,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          disabled={!editor.can().chain().focus().toggleBold().run()}
+          disabled={disabled || !editor.can().chain().focus().toggleBold().run()}
         >
           <Bold className="h-4 w-4" />
         </Button>
@@ -91,7 +96,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          disabled={!editor.can().chain().focus().toggleItalic().run()}
+          disabled={disabled || !editor.can().chain().focus().toggleItalic().run()}
         >
           <Italic className="h-4 w-4" />
         </Button>
@@ -100,7 +105,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().toggleStrike().run()}
-          disabled={!editor.can().chain().focus().toggleStrike().run()}
+          disabled={disabled || !editor.can().chain().focus().toggleStrike().run()}
         >
           <Strikethrough className="h-4 w-4" />
         </Button>
@@ -109,7 +114,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           className="h-7 w-7 p-0"
           onClick={() => editor.chain().focus().toggleCode().run()}
-          disabled={!editor.can().chain().focus().toggleCode().run()}
+          disabled={disabled || !editor.can().chain().focus().toggleCode().run()}
         >
           <Code className="h-4 w-4" />
         </Button>
@@ -118,6 +123,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           pressed={editor.isActive('bulletList')}
           onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
+          disabled={disabled}
         >
           <List className="h-4 w-4" />
         </Toggle>
@@ -125,6 +131,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           pressed={editor.isActive('orderedList')}
           onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
+          disabled={disabled}
         >
           <ListOrdered className="h-4 w-4" />
         </Toggle>
@@ -132,6 +139,7 @@ function Toolbar({ editor }: ToolbarProps) {
           size="sm"
           pressed={editor.isActive('blockquote')}
           onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
+          disabled={disabled}
         >
           <Quote className="h-4 w-4" />
         </Toggle>
@@ -146,12 +154,14 @@ function Toolbar({ editor }: ToolbarProps) {
  * @param handleChange - Callback for when the editor content changes
  * @param initialContent - Initial content for the editor
  * @param editorRef - Ref object to expose the editor instance to the parent component
+ * @param disabled - Whether the editor is disabled
  */
 type TiptapProps = {
   className?: string
   handleChange?: (content: JSONContent) => void
   initialContent?: JSONContent | null
   editorRef?: React.MutableRefObject<{ focus: () => void } | null>
+  disabled?: boolean
 }
 
 export default function Tiptap({
@@ -159,6 +169,7 @@ export default function Tiptap({
   handleChange,
   initialContent,
   editorRef,
+  disabled = false,
 }: TiptapProps) {
   const editor = useEditor({
     extensions: [StarterKit.configure({})],
@@ -168,6 +179,7 @@ export default function Tiptap({
       handleChange?.(json)
     },
     immediatelyRender: false,
+    editable: !disabled,
   })
 
   // エディタのインスタンスを親コンポーネントに公開
@@ -192,10 +204,20 @@ export default function Tiptap({
     }
   }, [editor, initialContent])
 
+  // Update editor editable state when disabled prop changes
+  useEffect(() => {
+    if (editor) {
+      editor.setEditable(!disabled)
+    }
+  }, [editor, disabled])
+
   return (
     <div className={cn(className)}>
-      <Toolbar editor={editor} />
-      <EditorContent editor={editor} className={cn('h-full w-full cursor-text')} />
+      <Toolbar editor={editor} disabled={disabled} />
+      <EditorContent
+        editor={editor}
+        className={cn('h-full w-full', !disabled ? 'cursor-text' : 'cursor-not-allowed opacity-70')}
+      />
     </div>
   )
 }
