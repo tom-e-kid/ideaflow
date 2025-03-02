@@ -13,14 +13,13 @@ export default function DocPage({ params }: { params: Promise<{ docId: string }>
 
   const {
     content,
-    setContent,
-    setOriginalContent,
     isLoading,
     setIsLoading,
     handleChange,
     handleSave,
     isSaving,
     hasChanges,
+    setDocContent,
   } = useDocEditor({
     initialDoc: { docId, content: null },
   })
@@ -46,8 +45,7 @@ export default function DocPage({ params }: { params: Promise<{ docId: string }>
         }
 
         const data = await response.json()
-        setContent(data.content)
-        setOriginalContent(data.content)
+        setDocContent(data.content)
       } catch (error) {
         console.error('Error fetching document:', error)
         toast({
@@ -61,7 +59,7 @@ export default function DocPage({ params }: { params: Promise<{ docId: string }>
     }
 
     fetchDoc()
-  }, [docId, router, toast, setContent, setOriginalContent, setIsLoading])
+  }, [docId, router, toast, setDocContent, setIsLoading])
 
   if (isLoading) {
     return (

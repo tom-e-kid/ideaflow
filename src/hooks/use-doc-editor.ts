@@ -3,8 +3,16 @@
 import { useToast } from '@/components/ui/use-toast'
 import { useDocStore } from '@/stores/doc-store'
 import { JSONContent } from '@tiptap/react'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
+// Default empty document structure
+const EMPTY_DOC: JSONContent = { type: 'doc', content: [{ type: 'paragraph' }] }
+
+/**
+ * Props for the useDocEditor hook
+ * @property initialDoc - Optional initial document data
+ * @property onSaveSuccess - Optional callback function called after successful save
+ */
 type UseDocEditorProps = {
   initialDoc?: {
     docId?: string
@@ -13,58 +21,78 @@ type UseDocEditorProps = {
   onSaveSuccess?: (docId: string) => void
 }
 
+/**
+ * Hook for managing document editor state and operations
+ *
+ * Provides functionality for:
+ * - Tracking document content and changes
+ * - Handling content updates
+ * - Saving documents (create/update)
+ * - Managing loading and saving states
+ */
 export function useDocEditor({ initialDoc, onSaveSuccess }: UseDocEditorProps = {}) {
   const { toast } = useToast()
   const { createDoc, updateDoc } = useDocStore()
 
-  // デフォルトの空のドキュメント
-  const emptyDoc = { type: 'doc', content: [{ type: 'paragraph' }] }
+  // Determine if we're in edit mode (existing document) or create mode
+  const isEditMode = !!initialDoc?.docId
 
-  const [content, setContent] = useState<JSONContent>(initialDoc?.content || emptyDoc)
+  // Core state management
+  const [content, setContent] = useState<JSONContent>(initialDoc?.content || EMPTY_DOC)
   const [originalContent, setOriginalContent] = useState<JSONContent>(
-    initialDoc?.content || emptyDoc
+    initialDoc?.content || EMPTY_DOC
   )
   const [isLoading, setIsLoading] = useState(!!initialDoc?.docId)
   const [isSaving, setIsSaving] = useState(false)
-  const [hasChanges, setHasChanges] = useState(false)
 
-  // 新規作成モードか編集モードかを判定
-  const isEditMode = !!initialDoc?.docId
+  /**
+   * Determines if the current content has unsaved changes
+   * by comparing with the original content
+   */
+  const hasChanges = useMemo(() => {
+    return JSON.stringify(content) !== JSON.stringify(originalContent)
+  }, [content, originalContent])
 
-  // コンテンツの変更を処理
-  const handleChange = (newContent: JSONContent) => {
+  /**
+   * Updates the editor content when changes are made
+   * @param newContent - The updated document content
+   */
+  const handleChange = useCallback((newContent: JSONContent) => {
     setContent(newContent)
-    // 変更があるかチェック
-    setHasChanges(JSON.stringify(newContent) !== JSON.stringify(originalContent))
-  }
+  }, [])
 
-  // ドキュメントの保存処理
-  const handleSave = async () => {
+  /**
+   * Sets both current and original document content
+   * Used when loading a document from external source
+   * @param docContent - The document content to set
+   */
+  const setDocContent = useCallback((docContent: JSONContent) => {
+    setContent(docContent)
+    setOriginalContent(docContent)
+  }, [])
+
+  /**
+   * Saves the current document
+   * Creates a new document or updates an existing one based on mode
+   */
+  const handleSave = useCallback(async () => {
     if (!content) return
 
     try {
       setIsSaving(true)
 
       let docId: string
-      if (isEditMode) {
-        docId = await updateDoc(initialDoc.docId!, content)
+      if (isEditMode && initialDoc?.docId) {
+        docId = await updateDoc(initialDoc.docId, content)
       } else {
         docId = await createDoc(content)
       }
 
-      if (!isEditMode && docId) {
-        // 新規作成時
-        if (onSaveSuccess) {
-          onSaveSuccess(docId)
-        }
-      } else {
-        // 編集時
-        // オリジナルのコンテンツを更新し、変更フラグをリセット
-        setOriginalContent(content)
-        setHasChanges(false)
-        if (onSaveSuccess) {
-          onSaveSuccess(docId)
-        }
+      // Update original content to match current content after successful save
+      setOriginalContent(content)
+
+      if (onSaveSuccess) {
+        onSaveSuccess(docId)
       }
 
       toast({
@@ -81,18 +109,17 @@ export function useDocEditor({ initialDoc, onSaveSuccess }: UseDocEditorProps = 
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [content, isEditMode, initialDoc?.docId, createDoc, updateDoc, onSaveSuccess, toast])
 
+  // Public interface
   return {
-    content,
-    setContent,
-    originalContent,
-    setOriginalContent,
-    isLoading,
-    setIsLoading,
-    isSaving,
-    hasChanges,
-    handleChange,
-    handleSave,
+    content, // Current document content
+    isLoading, // Whether document is loading
+    setIsLoading, // Function to update loading state
+    isSaving, // Whether document is being saved
+    hasChanges, // Whether document has unsaved changes
+    handleChange, // Handler for content changes
+    handleSave, // Handler for saving document
+    setDocContent, // Function to set document content (both current and original)
   }
 }
