@@ -4,7 +4,10 @@ import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 // POST /api/docs/[docId]/duplicate - Duplicate a document
-export async function POST(request: NextRequest, { params }: { params: { docId: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ docId: string }> }
+) {
   try {
     const session = await auth()
 
@@ -14,7 +17,7 @@ export async function POST(request: NextRequest, { params }: { params: { docId: 
     }
 
     const userId = session.user.id
-    const { docId } = params
+    const { docId } = await params
 
     // Find the original document
     const originalDoc = await prisma.doc.findUnique({
