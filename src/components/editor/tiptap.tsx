@@ -145,14 +145,21 @@ function Toolbar({ editor }: ToolbarProps) {
  * @param className - The class name for the component
  * @param handleChange - Callback for when the editor content changes
  * @param initialContent - Initial content for the editor
+ * @param editorRef - Ref object to expose the editor instance to the parent component
  */
 type TiptapProps = {
   className?: string
   handleChange?: (content: JSONContent) => void
   initialContent?: JSONContent | null
+  editorRef?: React.MutableRefObject<{ focus: () => void } | null>
 }
 
-export default function Tiptap({ className, handleChange, initialContent }: TiptapProps) {
+export default function Tiptap({
+  className,
+  handleChange,
+  initialContent,
+  editorRef,
+}: TiptapProps) {
   const editor = useEditor({
     extensions: [StarterKit.configure({})],
     content: initialContent || undefined,
@@ -162,6 +169,17 @@ export default function Tiptap({ className, handleChange, initialContent }: Tipt
     },
     immediatelyRender: false,
   })
+
+  // エディタのインスタンスを親コンポーネントに公開
+  useEffect(() => {
+    if (editor && editorRef) {
+      editorRef.current = {
+        focus: () => {
+          editor.commands.focus('end')
+        },
+      }
+    }
+  }, [editor, editorRef])
 
   // Update content when initialContent changes
   useEffect(() => {
