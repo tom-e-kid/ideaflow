@@ -6,15 +6,15 @@ import { useEffect, useRef } from 'react'
 
 export function List() {
   const {
-    docs: documents,
+    docs,
     isLoading,
     error,
     hasMore,
-    pageDocs: loadMore,
+    pageDocs,
     selectedDocId,
-    selectDoc: selectDocument,
-    duplicateDoc: duplicateDocument,
-    deleteDoc: deleteDocument,
+    selectDoc,
+    duplicateDoc,
+    deleteDoc,
   } = useDocStore()
 
   const listRef = useRef<HTMLDivElement>(null)
@@ -29,12 +29,12 @@ export function List() {
     const path = window.location.pathname
     const match = path.match(/\/docs\/([^/]+)/)
     if (match && match[1]) {
-      selectDocument(match[1])
+      selectDoc(match[1])
     } else {
       // ルートパスの場合は選択をクリア
-      selectDocument(null)
+      selectDoc(null)
     }
-  }, [selectDocument])
+  }, [selectDoc])
 
   // 無限スクロールの実装
   useEffect(() => {
@@ -48,7 +48,7 @@ export function List() {
         hasMore &&
         !isLoading
       ) {
-        loadMore()
+        pageDocs()
       }
     }
 
@@ -56,7 +56,7 @@ export function List() {
     return () => {
       listElement.removeEventListener('scroll', handleScroll)
     }
-  }, [hasMore, isLoading, loadMore])
+  }, [hasMore, isLoading, pageDocs])
 
   if (error) {
     return <div className="p-4 text-destructive">Error loading documents</div>
@@ -64,27 +64,27 @@ export function List() {
 
   return (
     <div ref={listRef} className="flex-1 overflow-y-auto">
-      <div className="space-y-1 px-1">
-        {isLoading && documents.length === 0 ? (
+      <div className="space-y-1 pl-4 pr-2">
+        {isLoading && docs.length === 0 ? (
           <div className="flex justify-center p-4">
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent" />
           </div>
-        ) : documents.length === 0 ? (
+        ) : docs.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground">No documents found</div>
         ) : (
-          documents.map((doc) => (
+          docs.map((doc) => (
             <ListItem
               key={doc.docId}
               docId={doc.docId}
               title={doc.title}
               isSelected={doc.docId === selectedDocId}
-              onSelect={selectDocument}
-              onDuplicate={duplicateDocument}
-              onDelete={deleteDocument}
+              onSelect={selectDoc}
+              onDuplicate={duplicateDoc}
+              onDelete={deleteDoc}
             />
           ))
         )}
-        {isLoading && documents.length > 0 && (
+        {isLoading && docs.length > 0 && (
           <div className="flex justify-center p-2">
             <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
           </div>

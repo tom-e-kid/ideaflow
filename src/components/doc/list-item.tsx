@@ -17,8 +17,8 @@ interface ListItemProps {
   title: string
   isSelected: boolean
   onSelect: (docId: string) => void
-  onDuplicate: (docId: string) => Promise<void>
-  onDelete: (docId: string) => Promise<void>
+  onDuplicate: (docId: string) => Promise<string>
+  onDelete: (docId: string) => Promise<string>
 }
 
 export function ListItem({
