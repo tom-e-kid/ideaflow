@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id
     const { searchParams } = new URL(request.url)
     const cursor = searchParams.get('cursor')
-    const limit = parseInt(searchParams.get('limit') || '20', 10)
+    const limit = parseInt(searchParams.get('limit') || '50', 10)
 
     // Find documents owned by the user
     const docs = await prisma.doc.findMany({

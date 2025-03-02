@@ -48,7 +48,7 @@ export const useDocStore = create<DocState>((set, get) => ({
       if (cursor) {
         url.searchParams.append('cursor', cursor)
       }
-      url.searchParams.append('limit', '20')
+      url.searchParams.append('limit', '50')
 
       const response = await fetch(url.toString())
 
