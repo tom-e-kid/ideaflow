@@ -175,20 +175,22 @@ export const useDocStore = create<DocState>((set, get) => ({
 
       const data = await response.json()
 
-      // キャッシュ内のドキュメントを更新
-      set((state) => ({
-        docs: state.docs.map((doc) =>
-          doc.docId === docId
-            ? {
-                ...doc,
-                content: data.content,
-                title: extractDocumentTitle(data.content),
-                updatedAt: data.updatedAt,
-              }
-            : doc
-        ),
-        isLoading: false,
-      }))
+      // キャッシュ内のドキュメントを更新し、先頭に移動
+      set((state) => {
+        const updatedDoc = {
+          ...state.docs.find((doc) => doc.docId === docId)!,
+          content: data.content,
+          title: extractDocumentTitle(data.content),
+          updatedAt: data.updatedAt,
+        }
+
+        const otherDocs = state.docs.filter((doc) => doc.docId !== docId)
+
+        return {
+          docs: [updatedDoc, ...otherDocs],
+          isLoading: false,
+        }
+      })
 
       return data.docId
     } catch (err) {
