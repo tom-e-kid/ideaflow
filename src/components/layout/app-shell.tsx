@@ -11,13 +11,14 @@ import {
 import { cn } from '@/lib/utils'
 import { LogOut, Menu, Plus, User } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { status } = useSession()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const pathname = usePathname()
+  const router = useRouter()
 
   // Check if current route is an auth route
   const isAuthRoute = pathname.startsWith('/auth')
@@ -71,8 +72,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               size="icon"
               aria-label="New note"
               onClick={() => {
-                // TODO: Implement new note creation
-                console.log('Create new note')
+                // move to root page
+                router.push('/')
               }}
             >
               <Plus className="h-5 w-5" />

@@ -4,7 +4,7 @@ import Tiptap from '@/components/editor/tiptap'
 import { Button } from '@/components/ui/button'
 import { JSONContent } from '@tiptap/react'
 
-type DocumentEditorProps = {
+type EditorProps = {
   content: JSONContent | null
   handleChange: (content: JSONContent) => void
   handleSave: () => void
@@ -13,14 +13,14 @@ type DocumentEditorProps = {
   className?: string
 }
 
-export function DocumentEditor({
+export function Editor({
   content,
   handleChange,
   handleSave,
   isSaving,
   hasChanges,
   className = 'h-full w-full',
-}: DocumentEditorProps) {
+}: EditorProps) {
   return (
     <div className={className}>
       {/* Save Button */}

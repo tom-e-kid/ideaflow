@@ -1,8 +1,8 @@
 'use client'
 
-import { DocumentEditor } from '@/components/document/DocumentEditor'
+import { Editor } from '@/components/doc/editor'
 import { useToast } from '@/components/ui/use-toast'
-import { useDocumentEditor } from '@/hooks/useDocumentEditor'
+import { useDocEditor } from '@/hooks/use-doc-editor'
 import { useRouter } from 'next/navigation'
 import { use, useEffect } from 'react'
 
@@ -21,7 +21,7 @@ export default function DocPage({ params }: { params: Promise<{ docId: string }>
     handleSave,
     isSaving,
     hasChanges,
-  } = useDocumentEditor({
+  } = useDocEditor({
     initialDoc: { docId, content: null },
   })
 
@@ -72,7 +72,7 @@ export default function DocPage({ params }: { params: Promise<{ docId: string }>
   }
 
   return (
-    <DocumentEditor
+    <Editor
       content={content}
       handleChange={handleChange}
       handleSave={handleSave}

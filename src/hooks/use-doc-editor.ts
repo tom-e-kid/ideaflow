@@ -1,11 +1,11 @@
 'use client'
 
 import { useToast } from '@/components/ui/use-toast'
+import { useDocStore } from '@/stores/doc-store'
 import { JSONContent } from '@tiptap/react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-type UseDocumentEditorProps = {
+type UseDocEditorProps = {
   initialDoc?: {
     docId?: string
     content: JSONContent | null
@@ -13,9 +13,9 @@ type UseDocumentEditorProps = {
   onSaveSuccess?: (docId: string) => void
 }
 
-export function useDocumentEditor({ initialDoc, onSaveSuccess }: UseDocumentEditorProps = {}) {
-  const router = useRouter()
+export function useDocEditor({ initialDoc, onSaveSuccess }: UseDocEditorProps = {}) {
   const { toast } = useToast()
+  const { createDoc, updateDoc } = useDocStore()
 
   // デフォルトの空のドキュメント
   const emptyDoc = { type: 'doc', content: [{ type: 'paragraph' }] }
@@ -45,36 +45,26 @@ export function useDocumentEditor({ initialDoc, onSaveSuccess }: UseDocumentEdit
     try {
       setIsSaving(true)
 
-      // 新規作成か更新かによってAPIエンドポイントとメソッドを変更
-      const method = isEditMode ? 'PUT' : 'POST'
-      const body = isEditMode
-        ? JSON.stringify({ docId: initialDoc.docId, content })
-        : JSON.stringify({ content })
-
-      const response = await fetch('/api/docs', {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body,
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${isEditMode ? 'update' : 'create'} document`)
+      let docId: string
+      if (isEditMode) {
+        docId = await updateDoc(initialDoc.docId!, content)
+      } else {
+        docId = await createDoc(content)
       }
 
-      const data = await response.json()
-
-      // 新規作成の場合はリダイレクト、編集の場合は元のコンテンツを更新
-      if (!isEditMode && data.docId) {
+      if (!isEditMode && docId) {
+        // 新規作成時
         if (onSaveSuccess) {
-          onSaveSuccess(data.docId)
-        } else {
-          router.push(`/docs/${data.docId}`)
+          onSaveSuccess(docId)
         }
       } else {
+        // 編集時
+        // オリジナルのコンテンツを更新し、変更フラグをリセット
         setOriginalContent(content)
         setHasChanges(false)
+        if (onSaveSuccess) {
+          onSaveSuccess(docId)
+        }
       }
 
       toast({

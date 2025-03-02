@@ -1,5 +1,6 @@
 'use client'
 
+import { List } from '@/components/doc/list'
 import { cn } from '@/lib/utils'
 
 interface LeftPanelProps {
@@ -18,12 +19,10 @@ export function LeftPanel({ isOpen }: LeftPanelProps) {
         <h1 className="text-xl font-bold text-primary">ideaflow</h1>
       </div>
 
-      {/* Note List Container */}
-      <div className="flex-1 overflow-auto">
-        <div className="space-y-2">
-          <div className="p-2 rounded-md hover:bg-muted cursor-pointer">Note 1</div>
-          <div className="p-2 rounded-md hover:bg-muted cursor-pointer">Note 2</div>
-        </div>
+      {/* Document List Container */}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <h2 className="text-sm font-medium text-muted-foreground mb-2 px-2">Documents</h2>
+        <List />
       </div>
 
       {/* User Menu Footer */}

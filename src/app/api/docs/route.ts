@@ -28,15 +28,15 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ docId: doc.docId }, { status: 201 })
+    return NextResponse.json(doc, { status: 201 })
   } catch (error) {
     console.error('Error creating document:', error)
     return NextResponse.json({ error: 'Failed to create document' }, { status: 500 })
   }
 }
 
-// PUT /api/docs - Update an existing document
-export async function PUT(request: NextRequest) {
+// GET /api/docs - Get all documents with pagination
+export async function GET(request: NextRequest) {
   try {
     const session = await auth()
 
@@ -46,38 +46,48 @@ export async function PUT(request: NextRequest) {
     }
 
     const userId = session.user.id
+    const { searchParams } = new URL(request.url)
+    const cursor = searchParams.get('cursor')
+    const limit = parseInt(searchParams.get('limit') || '20', 10)
 
-    const { docId, content } = await request.json()
-
-    if (!docId || !content) {
-      return NextResponse.json({ error: 'DocId and content are required' }, { status: 400 })
-    }
-
-    // Find the document and check ownership if user is logged in
-    const existingDoc = await prisma.doc.findUnique({
-      where: { docId },
-    })
-
-    if (!existingDoc) {
-      return NextResponse.json({ error: 'Document not found' }, { status: 404 })
-    }
-
-    // If the document has a userId, ensure the current user owns it
-    if (existingDoc.userId && existingDoc.userId !== userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
-
-    const updatedDoc = await prisma.doc.update({
-      where: { docId },
-      data: {
-        content,
-        modifiedAt: new Date(),
+    // Find documents owned by the user
+    const docs = await prisma.doc.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+      take: limit + 1, // Take one more to check if there are more docs
+      ...(cursor
+        ? {
+            skip: 1, // Skip the cursor
+            cursor: {
+              id: cursor,
+            },
+          }
+        : {}),
+      select: {
+        id: true,
+        docId: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
       },
     })
 
-    return NextResponse.json({ docId: updatedDoc.docId }, { status: 200 })
+    // Check if there are more docs
+    const hasMore = docs.length > limit
+    const nextDocs = hasMore ? docs.slice(0, limit) : docs
+    const nextCursor = hasMore ? docs[limit - 1].id : null
+
+    return NextResponse.json({
+      docs: nextDocs,
+      nextCursor,
+      hasMore,
+    })
   } catch (error) {
-    console.error('Error updating document:', error)
-    return NextResponse.json({ error: 'Failed to update document' }, { status: 500 })
+    console.error('Error fetching documents:', error)
+    return NextResponse.json({ error: 'Failed to fetch documents' }, { status: 500 })
   }
 }
