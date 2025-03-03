@@ -25,124 +25,145 @@ import './tiptap.css'
  * @description Toolbar component for the editor
  * @param editor - The editor instance
  * @param disabled - Whether the toolbar is disabled
+ * @param onSave - Callback for saving the editor content
+ * @param isSaving - Whether the content is being saved
+ * @param hasChanges - Whether there are changes to be saved
  */
 type ToolbarProps = {
   editor: Editor | null
   disabled?: boolean
+  onSave: () => void
+  isSaving: boolean
+  hasChanges: boolean
 }
 
-function Toolbar({ editor, disabled = false }: ToolbarProps) {
+function Toolbar({ editor, disabled = false, onSave, isSaving, hasChanges }: ToolbarProps) {
   if (!editor) {
     return null
   }
   return (
     <div className={cn('border-b border-input bg-background', disabled && 'opacity-70')}>
-      <div className="flex flex-wrap items-center gap-0.5 px-1.5 py-1">
+      <div className="flex items-center justify-between px-1.5 py-1">
+        <div className="flex flex-wrap items-center gap-0.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={disabled || !editor.can().undo()}
+          >
+            <Undo className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={disabled || !editor.can().redo()}
+          >
+            <Redo className="h-4 w-4" />
+          </Button>
+          <Separator orientation="vertical" className="mx-1 h-6" />
+          <Toggle
+            size="sm"
+            pressed={editor.isActive('heading', { level: 1 })}
+            onPressedChange={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            disabled={disabled}
+          >
+            <Heading1 className="h-4 w-4" />
+          </Toggle>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive('heading', { level: 2 })}
+            onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            disabled={disabled}
+          >
+            <Heading2 className="h-4 w-4" />
+          </Toggle>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive('heading', { level: 3 })}
+            onPressedChange={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            disabled={disabled}
+          >
+            <Heading3 className="h-4 w-4" />
+          </Toggle>
+          <Separator orientation="vertical" className="mx-1 h-6" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            disabled={disabled || !editor.can().chain().focus().toggleBold().run()}
+          >
+            <Bold className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            disabled={disabled || !editor.can().chain().focus().toggleItalic().run()}
+          >
+            <Italic className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            disabled={disabled || !editor.can().chain().focus().toggleStrike().run()}
+          >
+            <Strikethrough className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            disabled={disabled || !editor.can().chain().focus().toggleCode().run()}
+          >
+            <Code className="h-4 w-4" />
+          </Button>
+          <Separator orientation="vertical" className="mx-1 h-6" />
+          <Toggle
+            size="sm"
+            pressed={editor.isActive('bulletList')}
+            onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
+            disabled={disabled}
+          >
+            <List className="h-4 w-4" />
+          </Toggle>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive('orderedList')}
+            onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
+            disabled={disabled}
+          >
+            <ListOrdered className="h-4 w-4" />
+          </Toggle>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive('blockquote')}
+            onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
+            disabled={disabled}
+          >
+            <Quote className="h-4 w-4" />
+          </Toggle>
+        </div>
         <Button
-          variant="ghost"
+          variant={hasChanges && !isSaving && !disabled ? 'default' : 'outline'}
           size="sm"
-          className="h-7 w-7 p-0"
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={disabled || !editor.can().undo()}
+          onClick={onSave}
+          disabled={!hasChanges || isSaving || disabled}
+          className={`transition-all duration-200 ${
+            !hasChanges || isSaving || disabled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:bg-primary hover:text-primary-foreground'
+          }`}
         >
-          <Undo className="h-4 w-4" />
+          {isSaving ? 'Saving...' : hasChanges ? 'Save' : 'No Changes'}
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={disabled || !editor.can().redo()}
-        >
-          <Redo className="h-4 w-4" />
-        </Button>
-        <Separator orientation="vertical" className="mx-1 h-6" />
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('heading', { level: 1 })}
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          disabled={disabled}
-        >
-          <Heading1 className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('heading', { level: 2 })}
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          disabled={disabled}
-        >
-          <Heading2 className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('heading', { level: 3 })}
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          disabled={disabled}
-        >
-          <Heading3 className="h-4 w-4" />
-        </Toggle>
-        <Separator orientation="vertical" className="mx-1 h-6" />
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          disabled={disabled || !editor.can().chain().focus().toggleBold().run()}
-        >
-          <Bold className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          disabled={disabled || !editor.can().chain().focus().toggleItalic().run()}
-        >
-          <Italic className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          disabled={disabled || !editor.can().chain().focus().toggleStrike().run()}
-        >
-          <Strikethrough className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          onClick={() => editor.chain().focus().toggleCode().run()}
-          disabled={disabled || !editor.can().chain().focus().toggleCode().run()}
-        >
-          <Code className="h-4 w-4" />
-        </Button>
-        <Separator orientation="vertical" className="mx-1 h-6" />
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('bulletList')}
-          onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
-          disabled={disabled}
-        >
-          <List className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('orderedList')}
-          onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
-          disabled={disabled}
-        >
-          <ListOrdered className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('blockquote')}
-          onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
-          disabled={disabled}
-        >
-          <Quote className="h-4 w-4" />
-        </Toggle>
       </div>
     </div>
   )
@@ -155,6 +176,9 @@ function Toolbar({ editor, disabled = false }: ToolbarProps) {
  * @param initialContent - Initial content for the editor
  * @param editorRef - Ref object to expose the editor instance to the parent component
  * @param disabled - Whether the editor is disabled
+ * @param onSave - Callback for saving the editor content
+ * @param isSaving - Whether the content is being saved
+ * @param hasChanges - Whether there are changes to be saved
  */
 type TiptapProps = {
   className?: string
@@ -162,6 +186,9 @@ type TiptapProps = {
   initialContent?: JSONContent | null
   editorRef?: React.MutableRefObject<{ focus: () => void } | null>
   disabled?: boolean
+  onSave: () => void
+  isSaving: boolean
+  hasChanges: boolean
 }
 
 export default function Tiptap({
@@ -170,6 +197,9 @@ export default function Tiptap({
   initialContent,
   editorRef,
   disabled = false,
+  onSave,
+  isSaving,
+  hasChanges,
 }: TiptapProps) {
   const editor = useEditor({
     extensions: [StarterKit.configure({})],
@@ -213,7 +243,13 @@ export default function Tiptap({
 
   return (
     <div className={cn(className, 'flex flex-col h-full')}>
-      <Toolbar editor={editor} disabled={disabled} />
+      <Toolbar
+        editor={editor}
+        disabled={disabled}
+        onSave={onSave}
+        isSaving={isSaving}
+        hasChanges={hasChanges}
+      />
       <div className="flex-1 overflow-hidden">
         <EditorContent
           editor={editor}

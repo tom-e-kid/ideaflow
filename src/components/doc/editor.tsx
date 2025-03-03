@@ -1,7 +1,6 @@
 'use client'
 
 import Tiptap from '@/components/editor/tiptap'
-import { Button } from '@/components/ui/button'
 import { JSONContent } from '@tiptap/react'
 import { Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -66,33 +65,19 @@ export function Editor({
 
   return (
     <div className={className}>
-      {/* Save Button */}
-      <div className="h-[44px] flex items-center justify-end p-2">
-        <Button
-          variant={hasChanges && !isSaving && !isLoading ? 'default' : 'outline'}
-          size="sm"
-          onClick={handleSave}
-          disabled={!hasChanges || isSaving || isLoading}
-          className={`transition-all duration-200 ${
-            !hasChanges || isSaving || isLoading
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-primary hover:text-primary-foreground'
-          }`}
-        >
-          {isSaving ? 'Saving...' : hasChanges ? 'Save' : 'No Changes'}
-        </Button>
-      </div>
-
-      <div className="relative h-[calc(100%-44px)] w-full">
+      <div className="relative h-full w-full">
         <Tiptap
           className="h-full w-full"
           handleChange={handleChange}
           initialContent={content}
           editorRef={editorRef}
           disabled={isLoading}
+          onSave={handleSave}
+          isSaving={isSaving}
+          hasChanges={hasChanges}
         />
 
-        {/* Loading Indicator - Centered in the content area */}
+        {/* Loading Indicator */}
         {isLoading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
             <div className="bg-background/70 backdrop-blur-sm p-4 rounded-lg shadow-md pointer-events-auto flex flex-col items-center">
