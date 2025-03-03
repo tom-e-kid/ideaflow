@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
+import { useDocStore } from '@/stores/doc-store'
 import { LogOut, Menu, Plus, User } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -20,6 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const pathname = usePathname()
   const router = useRouter()
+  const selectDoc = useDocStore((state) => state.selectDoc)
 
   // Check if current route is an auth route
   const isAuthRoute = pathname.startsWith('/auth')
@@ -73,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               size="icon"
               aria-label="New note"
               onClick={() => {
-                // move to root page
+                selectDoc(null)
                 router.push('/')
               }}
             >
