@@ -6,7 +6,9 @@ import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {
   Bold,
+  Check,
   Code,
+  Copy,
   Heading1,
   Heading2,
   Heading3,
@@ -18,7 +20,8 @@ import {
   Strikethrough,
   Undo,
 } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Markdown } from 'tiptap-markdown'
 import './tiptap.css'
 
 /**
@@ -38,9 +41,24 @@ type ToolbarProps = {
 }
 
 function Toolbar({ editor, disabled = false, onSave, isSaving, hasChanges }: ToolbarProps) {
+  const [isCopied, setIsCopied] = useState(false)
+
   if (!editor) {
     return null
   }
+
+  const handleCopyToClipboard = async () => {
+    try {
+      const markdown = editor.storage.markdown.getMarkdown()
+      await navigator.clipboard.writeText(markdown)
+
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error)
+    }
+  }
+
   return (
     <div className={cn('border-b border-input bg-background', disabled && 'opacity-70')}>
       <div className="flex items-center justify-between px-1.5 py-1">
@@ -151,19 +169,30 @@ function Toolbar({ editor, disabled = false, onSave, isSaving, hasChanges }: Too
             <Quote className="h-4 w-4" />
           </Toggle>
         </div>
-        <Button
-          variant={hasChanges && !isSaving && !disabled ? 'default' : 'outline'}
-          size="sm"
-          onClick={onSave}
-          disabled={!hasChanges || isSaving || disabled}
-          className={`transition-all duration-200 ${
-            !hasChanges || isSaving || disabled
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-primary hover:text-primary-foreground'
-          }`}
-        >
-          {isSaving ? 'Saving...' : hasChanges ? 'Save' : 'No Changes'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopyToClipboard}
+            disabled={disabled}
+            className="h-7 w-7 p-0"
+          >
+            {isCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+          </Button>
+          <Button
+            variant={hasChanges && !isSaving && !disabled ? 'default' : 'outline'}
+            size="sm"
+            onClick={onSave}
+            disabled={!hasChanges || isSaving || disabled}
+            className={`transition-all duration-200 ${
+              !hasChanges || isSaving || disabled
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-primary hover:text-primary-foreground'
+            }`}
+          >
+            {isSaving ? 'Saving...' : hasChanges ? 'Save' : 'No Changes'}
+          </Button>
+        </div>
       </div>
     </div>
   )
@@ -202,7 +231,17 @@ export default function Tiptap({
   hasChanges,
 }: TiptapProps) {
   const editor = useEditor({
-    extensions: [StarterKit.configure({})],
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
+      Markdown.configure({
+        transformPastedText: true,
+        transformCopiedText: true,
+      }),
+    ],
     content: initialContent || undefined,
     onUpdate: ({ editor }) => {
       const json = editor.getJSON()
@@ -212,7 +251,6 @@ export default function Tiptap({
     editable: !disabled,
   })
 
-  // エディタのインスタンスを親コンポーネントに公開
   useEffect(() => {
     if (editor && editorRef) {
       editorRef.current = {
@@ -223,10 +261,8 @@ export default function Tiptap({
     }
   }, [editor, editorRef])
 
-  // Update content when initialContent changes
   useEffect(() => {
     if (editor && initialContent) {
-      // Only set content if it's different from current content
       const currentContent = editor.getJSON()
       if (JSON.stringify(currentContent) !== JSON.stringify(initialContent)) {
         editor.commands.setContent(initialContent)
@@ -234,7 +270,6 @@ export default function Tiptap({
     }
   }, [editor, initialContent])
 
-  // Update editor editable state when disabled prop changes
   useEffect(() => {
     if (editor) {
       editor.setEditable(!disabled)
