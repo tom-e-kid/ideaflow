@@ -63,7 +63,7 @@ export function ListItem({
   return (
     <div
       className={cn(
-        'group flex items-center justify-between px-2 py-2 rounded-md cursor-pointer hover:bg-muted/80 transition-colors',
+        'group flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer hover:bg-muted/80 transition-colors text-sm',
         isSelected && 'bg-muted'
       )}
       onClick={handleSelect}
@@ -75,11 +75,11 @@ export function ListItem({
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 opacity-0 group-hover:opacity-100 focus:opacity-100"
-            onClick={(e) => e.stopPropagation()} // リストアイテムのクリックをトリガーしないようにする
+            className="h-6 w-6 opacity-0 group-hover:opacity-100 focus:opacity-100"
+            onClick={(e) => e.stopPropagation()}
             disabled={isLoading}
           >
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="h-3.5 w-3.5" />
             <span className="sr-only">More options</span>
           </Button>
         </DropdownMenuTrigger>
