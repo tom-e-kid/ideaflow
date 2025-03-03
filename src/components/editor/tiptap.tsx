@@ -212,12 +212,17 @@ export default function Tiptap({
   }, [editor, disabled])
 
   return (
-    <div className={cn(className)}>
+    <div className={cn(className, 'flex flex-col h-full')}>
       <Toolbar editor={editor} disabled={disabled} />
-      <EditorContent
-        editor={editor}
-        className={cn('h-full w-full', !disabled ? 'cursor-text' : 'cursor-not-allowed opacity-70')}
-      />
+      <div className="flex-1 overflow-hidden">
+        <EditorContent
+          editor={editor}
+          className={cn(
+            'h-full w-full',
+            !disabled ? 'cursor-text' : 'cursor-not-allowed opacity-70'
+          )}
+        />
+      </div>
     </div>
   )
 }
