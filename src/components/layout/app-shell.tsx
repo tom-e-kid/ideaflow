@@ -6,6 +6,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
@@ -15,7 +16,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { status } = useSession()
+  const { status, data: session } = useSession()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const pathname = usePathname()
   const router = useRouter()
@@ -96,6 +97,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {session?.user?.email && (
+                <div className="px-1 py-1.5 text-xs text-muted-foreground">
+                  {session.user.email}
+                </div>
+              )}
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/auth/signin' })}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign out
